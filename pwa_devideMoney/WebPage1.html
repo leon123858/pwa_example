@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="jquery.js" ></script>
+<script src="jquery.cookie.js" ></script>
+<script src="index.js" defer></script>
+<link rel="manifest" href="manifest.webmanifest">
+<title>HomePage</title>
+<style type="text/css">
+    @media(min-width: 300px){
+        
+    }
+    @media(min-width: 700px){
+       
+    }
+    @media(min-width: 1200px){
+        
+    }
+</style>
+</head>
+<body>
+<h1>分錢吧</h1>
+<input id = "buildroom" type="button" value="建立新專案">
+<p>
+<span>跳轉至<input id = "goal" type="text" placeholder="請寫入目標房間號">號分頁</span><input id = "jumproom" type="button" value="click">
+<p>
+<span id = "show_error"></span>
+<p>
+<span>你上次進入的活動是<span id = "last_time">XXXX</span></span>
+<script>
+$(function(){
+    function testtoken(code){
+        $.ajax({
+　　　　　　'url':'//server-282202.appspot.com/'+'asktoken?token='+ code,
+　　　　　　'method':'GET',
+　　　　　　'data':{},
+　　　　　　'success':function(data){
+             var json = JSON.parse(data);
+             console.log(json.token);
+             if(json.token == "true"){
+                 $.cookie('last_time',code, { expires: 7, path: '/'});
+                 $(location).attr('href', '//tomatoclock.000webhostapp.com/WebPage2.html?token=' + code);
+             }
+             else{
+                 $("#show_error").html("跳轉目標房不存在, 請建立新專案");
+             }
+　　　　　　}
+　　　　  });
+    }
+    function gettoken(){
+        $.ajax({
+　　　　　　'url':'//server-282202.appspot.com/'+'newtoken',
+　　　　　　'method':'GET',
+　　　　　　'data':{},
+　　　　　　'success':function(data){
+             var json = JSON.parse(data);
+             console.log(json.token);
+             $.cookie('last_time',json.token, { expires: 7, path: '/'});
+          //http://127.0.0.1:1269/WebPage1.html
+             $(location).attr('href', '//tomatoclock.000webhostapp.com/WebPage2.html?token=' + json.token);
+　　　　　　}
+　　　　  });
+    }
+    var last_time = $.cookie("last_time");
+	document.getElementById("last_time").innerHTML = last_time;
+    $('#buildroom').click(function() {;
+        gettoken();
+    });
+    $('#jumproom').click(function() {
+        testtoken($("#goal").val());
+    });
+});
+</script>
+</body>
+</html>
